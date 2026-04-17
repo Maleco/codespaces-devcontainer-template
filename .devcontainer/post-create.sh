@@ -16,12 +16,12 @@ cd /workspaces
 
 echo "📦 Cloning backend repo..."
 if [ ! -d "debiteurenbeheer" ]; then
-  gh repo clone payt/debiteurenbeheer || echo "⚠️  Backend repo clone failed"
+  git clone https://${GITHUB_TOKEN}@github.com/payt/debiteurenbeheer.git 2>/dev/null || echo "⚠️  Backend repo clone failed"
 fi
 
 echo "📦 Cloning frontend repo..."
 if [ ! -d "debiteurenbeheer-frontend" ]; then
-  gh repo clone payt/debiteurenbeheer-frontend || echo "⚠️  Frontend repo clone failed"
+  git clone https://${GITHUB_TOKEN}@github.com/payt/debiteurenbeheer-frontend.git 2>/dev/null || echo "⚠️  Frontend repo clone failed"
 fi
 
 # Setup backend if it exists
