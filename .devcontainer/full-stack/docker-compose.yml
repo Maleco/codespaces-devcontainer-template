@@ -1,39 +1,49 @@
-# Full-stack development: Backend + Frontend
+version: '3.8'
+
 services:
   backend:
-    build:
-      context: ../..
-      dockerfile: .devcontainer/docker-compose.yml
+    image: mcr.microsoft.com/devcontainers/ruby:3.4
+    command: bash -c "cd /workspaces/debiteurenbeheer && bundle install && bundle exec rails s -b 0.0.0.0"
     ports:
       - "3000:3000"
+    volumes:
+      - ../..:/workspaces
+    environment:
+      RAILS_ENV: development
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/debiteurenbeheer_development
     depends_on:
       - postgres
       - redis
       - elasticsearch
-    environment:
-      RAILS_ENV: development
 
   frontend:
-    build:
-      context: ../../debiteurenbeheer-frontend
-      dockerfile: Dockerfile
+    image: node:24
+    command: bash -c "cd /workspaces/debiteurenbeheer-frontend && npm install && npm start"
     ports:
       - "5000:5000"
+    volumes:
+      - ../..:/workspaces
     environment:
       NODE_ENV: development
 
   postgres:
     image: postgres:15
     environment:
-      POSTGRES_USER: payt
-      POSTGRES_PASSWORD: payt_password
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
       POSTGRES_DB: debiteurenbeheer_development
+    ports:
+      - "5432:5432"
 
   redis:
     image: redis:7-alpine
+    ports:
+      - "6379:6379"
 
   elasticsearch:
     image: elasticsearch:8.11.0
     environment:
       - xpack.security.enabled=false
       - discovery.type=single-node
+    ports:
+      - "9200:9200"
