@@ -52,9 +52,9 @@ else
   echo "⚠️  Frontend repo not found - skipping setup"
 fi
 
-# Install Claude Code
-echo "🤖 Installing Claude Code..."
-npm install -g @anthropic-ai/claude-code 2>/dev/null || true
+# Install Claude
+echo "🤖 Installing Claude..."
+curl -fsSL https://claude.ai/install.sh | bash 2>/dev/null || echo "⚠️  Claude installation skipped"
 
 echo ""
 echo "✅ Setup complete!"
@@ -71,6 +71,6 @@ echo "📋 Start React (from frontend directory):"
 echo "   cd /workspaces/debiteurenbeheer-frontend"
 echo "   npm start"
 echo ""
-echo "🤖 Use Claude Code:"
+echo "🤖 Use Claude:"
 echo "   claude <command>"
 echo ""
