@@ -1,12 +1,11 @@
 {
   "name": "Debiteurenbeheer - Rails + React + Claude",
-  "image": "mcr.microsoft.com/devcontainers/base:jammy",
+  "image": "mcr.microsoft.com/devcontainers/ruby:3.4",
   "features": {
     "ghcr.io/devcontainers/features/docker-in-docker:2": {},
-    "ghcr.io/devcontainers/features/github-cli:1": {},
-    "ghcr.io/devcontainers/features/node:20": {},
-    "ghcr.io/devcontainers/features/ruby:3.4": {}
+    "ghcr.io/devcontainers/features/github-cli:1": {}
   },
+  "onCreateCommand": "/bin/bash -c 'apt-get update && apt-get install -y nodejs npm'",
   "containerEnv": {
     "RAILS_ENV": "development",
     "NODE_ENV": "development"
