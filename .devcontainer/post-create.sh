@@ -3,6 +3,27 @@ set -e
 
 echo "🚀 Setting up Debiteurenbeheer development environment..."
 
+# Update package lists
+sudo apt-get update
+
+# Install Ruby
+echo "💎 Installing Ruby 3.4..."
+sudo apt-get install -y ruby-full build-essential 2>&1 | grep -v "^Get:\|^Hit:\|^Ign:\|^Reading\|^Building\|^Setting up\|^Processing triggers" | tail -20 || true
+
+# Install PostgreSQL and Redis
+echo "🗄️  Installing PostgreSQL and Redis..."
+sudo apt-get install -y postgresql postgresql-contrib redis-server 2>&1 | grep -v "^Get:\|^Hit:\|^Ign:\|^Reading\|^Building\|^Setting up\|^Processing triggers" | tail -20 || true
+
+# Start services
+echo "▶️  Starting PostgreSQL and Redis..."
+sudo service postgresql start || true
+sudo service redis-server start || true
+sleep 2
+
+# Setup Rails
+echo "💎 Installing bundler..."
+sudo gem install bundler
+
 # Clone frontend repo if not already present
 if [ ! -d "../debiteurenbeheer-frontend" ]; then
   echo "📦 Cloning frontend repository..."
@@ -11,61 +32,49 @@ if [ ! -d "../debiteurenbeheer-frontend" ]; then
   cd debiteurenbeheer
 fi
 
-# Frontend setup
+# Install frontend dependencies
 echo "📦 Installing frontend dependencies..."
 cd ../debiteurenbeheer-frontend
 npm install
 cd ../debiteurenbeheer
 
-# Backend setup
-echo "💎 Installing bundler..."
-gem install bundler
-
-echo "📦 Installing Ruby dependencies..."
+# Install backend dependencies
+echo "📦 Installing backend dependencies..."
 bundle install
 
-# PostgreSQL setup
+# Setup PostgreSQL user and database
 echo "🗄️  Setting up PostgreSQL database..."
-sudo service postgresql start || true
+sudo -u postgres psql -c "CREATE USER payt WITH PASSWORD 'payt_password' CREATEDB;" 2>/dev/null || echo "  (user already exists)"
+sudo -u postgres psql -c "CREATE DATABASE debiteurenbeheer_development OWNER payt;" 2>/dev/null || echo "  (database already exists)"
 
-# Wait for PostgreSQL to start
-sleep 2
-
-# Create database user and database
-sudo -u postgres psql -c "CREATE USER payt WITH PASSWORD 'payt_password' CREATEDB;" 2>/dev/null || true
-sudo -u postgres psql -c "CREATE DATABASE debiteurenbeheer_development OWNER payt;" 2>/dev/null || true
-
-# Setup Rails database
+# Run migrations if applicable
 echo "🗄️  Running database migrations..."
-bundle exec rails db:migrate 2>/dev/null || echo "⚠️  Database migration skipped (database may not be initialized yet)"
-
-# Redis setup
-echo "📦 Installing Redis..."
-sudo apt-get update && sudo apt-get install -y redis-server 2>/dev/null || echo "Redis installation skipped"
-sudo service redis-server start || true
+bundle exec rails db:migrate 2>/dev/null || echo "  (skipped - may need manual setup)"
 
 # Install Claude Code CLI
 echo "🤖 Installing Claude Code CLI..."
-npm install -g @anthropic-ai/claude-code 2>/dev/null || echo "Claude Code CLI already installed or installation skipped"
+npm install -g @anthropic-ai/claude-code 2>/dev/null || echo "  (already installed)"
 
 echo ""
 echo "✅ Setup complete!"
 echo ""
+echo "📋 Services running:"
+echo "   ✓ PostgreSQL (localhost:5432)"
+echo "   ✓ Redis (localhost:6379)"
+echo ""
 echo "📋 Next steps:"
 echo ""
 echo "1️⃣  Start the Rails server (in a new terminal):"
-echo "    cd debiteurenbeheer"
 echo "    bundle exec rails s -b 0.0.0.0"
 echo ""
 echo "2️⃣  Start the frontend dev server (in another terminal):"
 echo "    cd ../debiteurenbeheer-frontend"
 echo "    npm start"
 echo ""
-echo "3️⃣  Use Claude Code to develop:"
-echo "    claude <command>"
+echo "3️⃣  Use Claude Code:"
+echo "    claude <your-command>"
 echo ""
 echo "📚 Quick commands:"
-echo "   bundle exec rails console         - Rails console"
-echo "   bundle exec rails db:migrate      - Run migrations"
-echo "   npm test                          - Run frontend tests"
+echo "   bundle exec rails console"
+echo "   npm test"
 echo ""
