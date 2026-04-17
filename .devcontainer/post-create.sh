@@ -12,33 +12,45 @@ cd /workspaces
 
 echo "📦 Cloning backend repo..."
 if [ ! -d "debiteurenbeheer" ]; then
-  git clone https://github.com/payt/debiteurenbeheer.git
+  git clone https://github.com/payt/debiteurenbeheer.git 2>/dev/null || echo "⚠️  Backend repo clone failed (may require authentication)"
 fi
 
 echo "📦 Cloning frontend repo..."
 if [ ! -d "debiteurenbeheer-frontend" ]; then
-  git clone https://github.com/payt/debiteurenbeheer-frontend.git
+  git clone https://github.com/payt/debiteurenbeheer-frontend.git 2>/dev/null || echo "⚠️  Frontend repo clone failed (may require authentication)"
 fi
 
-# Setup backend
-echo "📍 Setting up backend..."
-cd debiteurenbeheer
+# Setup backend if it exists
+if [ -d "debiteurenbeheer" ]; then
+  echo "📍 Setting up backend..."
+  cd debiteurenbeheer
 
-echo "💎 Installing bundler..."
-gem install bundler
+  echo "💎 Installing bundler..."
+  gem install bundler
 
-echo "📦 Installing gems..."
-bundle install
+  echo "📦 Installing gems..."
+  bundle install 2>/dev/null || echo "⚠️  Bundle install skipped"
 
-# Setup frontend
-echo "📍 Setting up frontend..."
-cd ../debiteurenbeheer-frontend
+  cd ..
+else
+  echo "⚠️  Backend repo not found - skipping setup"
+fi
 
-echo "📦 Installing Node.js..."
-apt-get install -y nodejs npm > /dev/null 2>&1 || true
+# Setup frontend if it exists
+if [ -d "debiteurenbeheer-frontend" ]; then
+  echo "📍 Setting up frontend..."
+  cd debiteurenbeheer-frontend
 
-echo "📦 Installing npm dependencies..."
-npm install
+  echo "📦 Installing Node.js..."
+  apt-get install -y nodejs npm > /dev/null 2>&1 || true
+
+  echo "📦 Installing npm dependencies..."
+  npm install 2>/dev/null || echo "⚠️  npm install skipped"
+
+  cd ..
+else
+  echo "⚠️  Frontend repo not found - skipping setup"
+fi
 
 # Install Claude Code
 echo "🤖 Installing Claude Code..."
