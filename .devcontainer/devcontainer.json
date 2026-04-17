@@ -4,7 +4,7 @@
   "features": {
     "ghcr.io/devcontainers/features/docker-in-docker:2": {},
     "ghcr.io/devcontainers/features/github-cli:1": {},
-    "ghcr.io/devcontainers/features/node:24": {},
+    "ghcr.io/devcontainers/features/node:20": {},
     "ghcr.io/devcontainers/features/ruby:3.4": {}
   },
   "containerEnv": {
