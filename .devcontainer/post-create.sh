@@ -15,59 +15,57 @@ fi
 echo "📦 Installing frontend dependencies..."
 cd ../debiteurenbeheer-frontend
 npm install
-
-# Backend setup
-echo "📦 Setting up backend..."
 cd ../debiteurenbeheer
 
-# Install bundler
-echo "💎 Installing Ruby dependencies..."
+# Backend setup
+echo "💎 Installing bundler..."
 gem install bundler
 
-# Create .env if it doesn't exist
-if [ ! -f ".env" ]; then
-  echo "📝 Creating .env file..."
-  cat > .env << 'EOF'
-# Docker compose setup
-DOCKER_CONTAINER_USER=vscode
-DOCKER_CONTAINER_HOME=/home/vscode
-DOCKER_BACKEND_PORT=3000
-DOCKER_NETWORK_NAMESPACE=_codespace
+echo "📦 Installing Ruby dependencies..."
+bundle install
 
-# Sidekiq Enterprise (required for bundle install)
-# Add this from Bitwarden
-# export BUNDLE_ENTERPRISE__CONTRIBSYS__COM="your-secret-here"
-EOF
-  echo "⚠️  Please add BUNDLE_ENTERPRISE__CONTRIBSYS__COM to .env from Bitwarden"
-fi
+# PostgreSQL setup
+echo "🗄️  Setting up PostgreSQL database..."
+sudo service postgresql start || true
+
+# Wait for PostgreSQL to start
+sleep 2
+
+# Create database user and database
+sudo -u postgres psql -c "CREATE USER payt WITH PASSWORD 'payt_password' CREATEDB;" 2>/dev/null || true
+sudo -u postgres psql -c "CREATE DATABASE debiteurenbeheer_development OWNER payt;" 2>/dev/null || true
+
+# Setup Rails database
+echo "🗄️  Running database migrations..."
+bundle exec rails db:migrate 2>/dev/null || echo "⚠️  Database migration skipped (database may not be initialized yet)"
+
+# Redis setup
+echo "📦 Installing Redis..."
+sudo apt-get update && sudo apt-get install -y redis-server 2>/dev/null || echo "Redis installation skipped"
+sudo service redis-server start || true
 
 # Install Claude Code CLI
 echo "🤖 Installing Claude Code CLI..."
-npm install -g @anthropic-ai/claude-code || echo "Claude Code CLI already installed or installation skipped"
+npm install -g @anthropic-ai/claude-code 2>/dev/null || echo "Claude Code CLI already installed or installation skipped"
 
 echo ""
 echo "✅ Setup complete!"
 echo ""
 echo "📋 Next steps:"
 echo ""
-echo "1️⃣  Add the Sidekiq Enterprise secret:"
-echo "    export BUNDLE_ENTERPRISE__CONTRIBSYS__COM=\"<secret-from-bitwarden>\""
+echo "1️⃣  Start the Rails server (in a new terminal):"
+echo "    cd debiteurenbeheer"
+echo "    bundle exec rails s -b 0.0.0.0"
 echo ""
-echo "2️⃣  Start the backend services (PostgreSQL, Redis, Elasticsearch):"
-echo "    docker compose up -d"
+echo "2️⃣  Start the frontend dev server (in another terminal):"
+echo "    cd ../debiteurenbeheer-frontend"
+echo "    npm start"
 echo ""
-echo "3️⃣  In another terminal, start the Rails server:"
-echo "    cd debiteurenbeheer && bundle exec rails s"
-echo ""
-echo "4️⃣  In another terminal, start the frontend dev server:"
-echo "    cd debiteurenbeheer-frontend && npm start"
-echo ""
-echo "5️⃣  Use Claude Code to develop:"
+echo "3️⃣  Use Claude Code to develop:"
 echo "    claude <command>"
 echo ""
-echo "📚 Useful commands:"
-echo "   docker compose up       - Start all backend services"
-echo "   docker compose down     - Stop all backend services"
-echo "   rails db:migrate        - Run migrations"
-echo "   rails es:reset          - Reset Elasticsearch"
+echo "📚 Quick commands:"
+echo "   bundle exec rails console         - Rails console"
+echo "   bundle exec rails db:migrate      - Run migrations"
+echo "   npm test                          - Run frontend tests"
 echo ""

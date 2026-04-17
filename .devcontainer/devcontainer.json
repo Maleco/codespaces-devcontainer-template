@@ -1,14 +1,22 @@
 {
   "name": "Debiteurenbeheer - Rails + React + Claude",
-  "image": "mcr.microsoft.com/devcontainers/ruby:3.4",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu-24.04",
   "features": {
-    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
-    "ghcr.io/devcontainers/features/github-cli:1": {}
+    "ghcr.io/devcontainers/features/node:20": {},
+    "ghcr.io/devcontainers/features/ruby:3.4": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/itsmechlark/features/postgresql:1": {
+      "version": "latest"
+    }
   },
-  "onCreateCommand": "/bin/bash -c 'apt-get update && apt-get install -y nodejs npm'",
   "containerEnv": {
     "RAILS_ENV": "development",
-    "NODE_ENV": "development"
+    "NODE_ENV": "development",
+    "PGHOST": "localhost",
+    "PGUSER": "payt",
+    "PGPASSWORD": "payt_password",
+    "PGDATABASE": "debiteurenbeheer_development",
+    "REDIS_URL": "redis://localhost:6379"
   },
   "postCreateCommand": "bash .devcontainer/post-create.sh",
   "customizations": {
