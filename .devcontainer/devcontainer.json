@@ -1,64 +1,18 @@
 {
-  "name": "Debiteurenbeheer - Rails + React + Claude",
-  "image": "mcr.microsoft.com/devcontainers/javascript:20",
+  "name": "Debiteurenbeheer Backend + Claude",
+  "image": "mcr.microsoft.com/devcontainers/ruby:3.4-bullseye",
   "containerEnv": {
-    "RAILS_ENV": "development",
-    "NODE_ENV": "development",
-    "PGHOST": "localhost",
-    "PGUSER": "payt",
-    "PGPASSWORD": "payt_password",
-    "PGDATABASE": "debiteurenbeheer_development",
-    "REDIS_URL": "redis://localhost:6379"
+    "RAILS_ENV": "development"
   },
   "postCreateCommand": "bash .devcontainer/post-create.sh",
   "customizations": {
     "vscode": {
       "extensions": [
         "rebornix.Ruby",
-        "dsznajder.es7-react-js-snippets",
-        "dbaeumer.vscode-eslint",
-        "esbenp.prettier-vscode",
-        "bradlc.vscode-tailwindcss",
         "eamodio.gitlens"
-      ],
-      "settings": {
-        "ruby.format": "rubocop",
-        "ruby.lint": {
-          "rubocop": true
-        },
-        "editor.formatOnSave": true,
-        "[ruby]": {
-          "editor.defaultFormatter": "rebornix.Ruby"
-        },
-        "[javascript]": {
-          "editor.defaultFormatter": "esbenp.prettier-vscode"
-        }
-      }
+      ]
     }
   },
-  "remoteUser": "node",
-  "forwardPorts": [
-    3000,
-    5000,
-    5432,
-    6379
-  ],
-  "portsAttributes": {
-    "3000": {
-      "label": "Rails Backend",
-      "onAutoForward": "notify"
-    },
-    "5000": {
-      "label": "React Frontend",
-      "onAutoForward": "notify"
-    },
-    "5432": {
-      "label": "PostgreSQL",
-      "onAutoForward": "silent"
-    },
-    "6379": {
-      "label": "Redis",
-      "onAutoForward": "silent"
-    }
-  }
+  "remoteUser": "root",
+  "forwardPorts": [3000]
 }
