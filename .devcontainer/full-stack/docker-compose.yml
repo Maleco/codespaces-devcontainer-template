@@ -1,0 +1,39 @@
+# Full-stack development: Backend + Frontend
+services:
+  backend:
+    build:
+      context: ../..
+      dockerfile: .devcontainer/docker-compose.yml
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+      - redis
+      - elasticsearch
+    environment:
+      RAILS_ENV: development
+
+  frontend:
+    build:
+      context: ../../debiteurenbeheer-frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      NODE_ENV: development
+
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: payt
+      POSTGRES_PASSWORD: payt_password
+      POSTGRES_DB: debiteurenbeheer_development
+
+  redis:
+    image: redis:7-alpine
+
+  elasticsearch:
+    image: elasticsearch:8.11.0
+    environment:
+      - xpack.security.enabled=false
+      - discovery.type=single-node

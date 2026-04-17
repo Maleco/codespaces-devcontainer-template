@@ -1,0 +1,33 @@
+{
+  "name": "Full Stack (Backend + Frontend)",
+  "dockerComposeFile": ["docker-compose.yml"],
+  "service": "backend",
+  "workspaceFolder": "/workspaces",
+
+  "forwardPorts": [3000, 5000, 5432, 6379, 9200],
+  
+  "portsAttributes": {
+    "3000": {
+      "label": "Rails Backend",
+      "onAutoForward": "notify"
+    },
+    "5000": {
+      "label": "React Frontend",
+      "onAutoForward": "notify"
+    }
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "anthropic.claude-code",
+        "rebornix.Ruby",
+        "shopify.ruby-lsp",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode"
+      ]
+    }
+  },
+
+  "postCreateCommand": "echo 'Full-stack ready: Backend on :3000, Frontend on :5000'"
+}

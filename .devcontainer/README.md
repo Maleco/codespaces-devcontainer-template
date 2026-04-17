@@ -51,3 +51,24 @@ To develop both frontend and backend simultaneously:
 - Both containers use the root-level `docker-compose.yml` plus their own overrides
 - Services are shared when running in the same Codespace
 - Environment configuration is automatic
+
+## Full Stack Container (RECOMMENDED)
+**Path:** `.devcontainer/full-stack/`
+
+- **Services**: Both backend AND frontend, plus all databases
+- **Ports**: 
+  - 3000 (Rails)
+  - 5000 (React)
+  - 5432 (PostgreSQL)
+  - 6379 (Redis)
+  - 9200 (Elasticsearch)
+- **Includes**: Claude Code extension + Ruby/React extensions
+- **Best for**: Working on both frontend and backend simultaneously
+
+### Why use Full Stack?
+- Single Codespace with everything running
+- One terminal for all development
+- Easy context switching between frontend/backend code
+- Claude Code can see both codebases
+- All services share the same database
+
