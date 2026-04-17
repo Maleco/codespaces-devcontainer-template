@@ -7,6 +7,10 @@ echo "🚀 Setting up Debiteurenbeheer..."
 echo "🔐 Installing SSH server..."
 apt-get update && apt-get install -y openssh-server > /dev/null 2>&1 || true
 
+# Install GitHub CLI
+echo "🐙 Installing GitHub CLI..."
+apt-get install -y gh > /dev/null 2>&1 || true
+
 # Clone repos into parent directory
 cd /workspaces
 
