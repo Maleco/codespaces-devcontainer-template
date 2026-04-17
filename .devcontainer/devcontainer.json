@@ -1,0 +1,70 @@
+{
+  "name": "Debiteurenbeheer - Rails + React + Claude",
+  "image": "mcr.microsoft.com/devcontainers/base:jammy",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/devcontainers/features/node:24": {},
+    "ghcr.io/devcontainers/features/ruby:3.4": {}
+  },
+  "containerEnv": {
+    "RAILS_ENV": "development",
+    "NODE_ENV": "development"
+  },
+  "postCreateCommand": "bash .devcontainer/post-create.sh",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "rebornix.Ruby",
+        "dsznajder.es7-react-js-snippets",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "bradlc.vscode-tailwindcss",
+        "eamodio.gitlens"
+      ],
+      "settings": {
+        "ruby.format": "rubocop",
+        "ruby.lint": {
+          "rubocop": true
+        },
+        "editor.formatOnSave": true,
+        "[ruby]": {
+          "editor.defaultFormatter": "rebornix.Ruby"
+        },
+        "[javascript]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        }
+      }
+    }
+  },
+  "remoteUser": "vscode",
+  "forwardPorts": [
+    3000,
+    5000,
+    5432,
+    9200,
+    6379
+  ],
+  "portsAttributes": {
+    "3000": {
+      "label": "Rails Backend",
+      "onAutoForward": "notify"
+    },
+    "5000": {
+      "label": "React Frontend",
+      "onAutoForward": "notify"
+    },
+    "5432": {
+      "label": "PostgreSQL",
+      "onAutoForward": "silent"
+    },
+    "9200": {
+      "label": "Elasticsearch",
+      "onAutoForward": "silent"
+    },
+    "6379": {
+      "label": "Redis",
+      "onAutoForward": "silent"
+    }
+  }
+}
