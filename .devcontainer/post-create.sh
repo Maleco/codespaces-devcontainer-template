@@ -3,6 +3,10 @@ set -e
 
 echo "🚀 Setting up Debiteurenbeheer Backend..."
 
+# Install SSH server
+echo "🔐 Installing SSH server..."
+apt-get update && apt-get install -y openssh-server > /dev/null 2>&1 || true
+
 # Install bundler
 echo "💎 Installing bundler..."
 gem install bundler
