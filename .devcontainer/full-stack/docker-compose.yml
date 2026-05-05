@@ -1,49 +1,91 @@
-version: '3.8'
-
 services:
   backend:
     image: mcr.microsoft.com/devcontainers/ruby:3.4
-    command: bash -c "cd /workspaces/debiteurenbeheer && bundle install && bundle exec rails s -b 0.0.0.0"
-    ports:
-      - "3000:3000"
     volumes:
-      - ../..:/workspaces
+      - /workspaces:/workspaces
     environment:
-      RAILS_ENV: development
-      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/debiteurenbeheer_development
+      - PGHOST=postgres
+      - PGUSER=payt
+      - PGPASSWORD=payt_password
+      - PGDATABASE=debiteurenbeheer_development
+      - REDIS_CACHE_URL=redis://redis:6379/1
+      - REDIS_IMPORT_STATS_URL=redis://redis:6379/0
+      - REDIS_SESSIONS_URL=redis://redis:6379/2
+      - REDIS_WORKER_URL=redis://redis:6379/3
+      - ELASTICSEARCH_FRONTEND_URL=http://elasticsearch:9200
+      - SMTP_HOST=localhost
+      - BUNDLE_ENTERPRISE__CONTRIBSYS__COM
+      - RAILS_MASTER_KEY
+      - CODESPACE_NAME
+      - CORS_ORIGINS=https://${CODESPACE_NAME}-5000.app.github.dev,https://${CODESPACE_NAME}-5001.app.github.dev
     depends_on:
       - postgres
       - redis
       - elasticsearch
+    command: sleep infinity
 
   frontend:
-    image: node:24
-    command: bash -c "cd /workspaces/debiteurenbeheer-frontend && npm install && npm start"
+    image: node:20
+    volumes:
+      - /workspaces/frontend:/workspaces/frontend
+      - frontend_modules:/workspaces/frontend/node_modules
+    environment:
+      - NODE_AUTH_TOKEN
+      - REACT_APP_BACKEND_URL=https://${CODESPACE_NAME}-3000.app.github.dev
+    command: bash -c "cd /workspaces/frontend && npm ci && npm run start"
     ports:
       - "5000:5000"
+
+  factuurinzien:
+    image: node:20
     volumes:
-      - ../..:/workspaces
+      - /workspaces/factuurinzien:/workspaces/factuurinzien
+      - factuurinzien_modules:/workspaces/factuurinzien/node_modules
     environment:
-      NODE_ENV: development
+      - NODE_AUTH_TOKEN
+      - REACT_APP_BACKEND_URL=https://${CODESPACE_NAME}-3000.app.github.dev
+    command: bash -c "cd /workspaces/factuurinzien && npm ci && npm run start"
+    ports:
+      - "5001:5001"
 
   postgres:
-    image: postgres:15
+    image: payt/postgres:18.1
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: payt
+      POSTGRES_PASSWORD: payt_password
       POSTGRES_DB: debiteurenbeheer_development
-    ports:
-      - "5432:5432"
-
-  redis:
-    image: redis:7-alpine
-    ports:
-      - "6379:6379"
+    volumes:
+      - postgres_data:/var/lib/postgresql
 
   elasticsearch:
-    image: elasticsearch:8.11.0
+    image: elasticsearch:8.19.3
     environment:
-      - xpack.security.enabled=false
-      - discovery.type=single-node
-    ports:
-      - "9200:9200"
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+      discovery.type: single-node
+      cluster.name: docker-cluster
+      bootstrap.memory_lock: "true"
+      xpack.security.enabled: "false"
+      xpack.security.enrollment.enabled: "false"
+      xpack.graph.enabled: "false"
+      xpack.watcher.enabled: "false"
+    ulimits:
+      nproc: 4096
+      nofile: 262144
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+
+  redis:
+    image: redis:7.0-alpine
+    volumes:
+      - redis_data:/data
+
+networks:
+  default:
+    name: payt
+
+volumes:
+  postgres_data:
+  elasticsearch_data:
+  redis_data:
+  frontend_modules:
+  factuurinzien_modules:

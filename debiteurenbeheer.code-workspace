@@ -1,0 +1,15 @@
+{
+  "folders": [
+    { "name": "backend",       "path": "/workspaces/backend" },
+    { "name": "frontend",      "path": "/workspaces/frontend" },
+    { "name": "factuurinzien", "path": "/workspaces/factuurinzien" }
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/.git": true,
+      "**/node_modules": true,
+      "**/tmp": true,
+      "**/log": true
+    }
+  }
+}
