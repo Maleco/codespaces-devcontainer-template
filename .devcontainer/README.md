@@ -1,74 +1,49 @@
 # Development Container Configurations
 
-This template includes two dev container setups for the Debiteurenbeheer project:
-
-## Backend Container
-**Path:** `.devcontainer/backend/`
-
-- **Services**: Rails app, PostgreSQL, Redis, Elasticsearch, Sidekiq
-- **Port**: 3000 (Rails)
-- **Includes**: Claude Code extension, Ruby LSP
-- **Setup**: Database auto-migration on creation
-
-Use this for backend development and API work.
-
-## Frontend Container
-**Path:** `.devcontainer/frontend/`
-
-- **Services**: React app with Node.js
-- **Port**: 5000 (React dev server)
-- **Includes**: Claude Code extension, ESLint, Prettier
-- **Setup**: NPM dependencies installed on creation
-
-Use this for frontend development and UI work.
-
-## Creating a Codespace
-
-When you create a Codespace:
-
-1. Go to the repository Code menu
-2. Select "Codespaces"
-3. GitHub will ask which dev container config to use
-4. Choose either `backend` or `frontend`
-5. Wait for setup to complete
-
-Both containers are pre-configured with:
-- ✅ Claude Code extension
-- ✅ Docker Compose services
-- ✅ Auto dependency installation
-- ✅ VS Code extensions for development
-
-## Full Stack Development
-
-To develop both frontend and backend simultaneously:
-
-1. Create a backend Codespace
-2. In a separate browser tab, create a frontend Codespace
-3. Work in parallel with separate terminals
-
-## Notes
-
-- Both containers use the root-level `docker-compose.yml` plus their own overrides
-- Services are shared when running in the same Codespace
-- Environment configuration is automatic
-
-## Full Stack Container (RECOMMENDED)
+## Full Stack (RECOMMENDED)
 **Path:** `.devcontainer/full-stack/`
 
-- **Services**: Both backend AND frontend, plus all databases
-- **Ports**: 
-  - 3000 (Rails)
-  - 5000 (React)
-  - 5432 (PostgreSQL)
-  - 6379 (Redis)
-  - 9200 (Elasticsearch)
-- **Includes**: Claude Code extension + Ruby/React extensions
-- **Best for**: Working on both frontend and backend simultaneously
+Clones all three repos (`debiteurenbeheer`, `debiteurenbeheer-frontend`, `factuurinzien`) and starts the full stack automatically.
 
-### Why use Full Stack?
-- Single Codespace with everything running
-- One terminal for all development
-- Easy context switching between frontend/backend code
-- Claude Code can see both codebases
-- All services share the same database
+**Services:** Rails + Sidekiq + PostgreSQL + Elasticsearch + Redis + both React dev servers  
+**Ports:** 3000 (Rails) · 5000 (frontend) · 5001 (debtor portal)  
+**Extensions:** Claude Code, Ruby LSP, ESLint, Prettier
 
+### Quick start
+
+1. Go to **Code → Codespaces → New codespace**
+2. Select **4-core** machine
+3. _(Optional)_ Set `FEATURE_BRANCH=your-branch` to start on a feature branch across all 3 repos
+4. Wait ~5 min for setup
+5. Access URLs printed in terminal on ready
+
+### Required Codespaces secret (set once)
+
+| Secret | Where |
+|--------|-------|
+| `BUNDLE_ENTERPRISE__CONTRIBSYS__COM` | [github.com/settings/codespaces](https://github.com/settings/codespaces) |
+| `NODE_AUTH_TOKEN` | same |
+
+`SECRET_KEY_BASE` and `LOCKBOX_MASTER_KEY` are hardcoded to dev values in `docker-compose.yml` — same as `.env.development`.
+
+### Pull test data
+
+```bash
+cd /workspaces/backend && bin/rails db:pull
+```
+
+### Multi-root workspace
+
+Open `debiteurenbeheer.code-workspace` (at repo root) to see all 3 repos in the VS Code file explorer simultaneously.
+
+---
+
+## Backend only
+**Path:** `.devcontainer/backend/`
+
+Rails + PostgreSQL + Redis + Elasticsearch + Sidekiq. Use for backend-only work.
+
+## Frontend only
+**Path:** `.devcontainer/frontend/`
+
+React dev server. Use for frontend-only work (points at a running backend).
