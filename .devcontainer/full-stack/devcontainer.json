@@ -10,7 +10,6 @@
     "5000": { "label": "Frontend", "onAutoForward": "openBrowser" },
     "5001": { "label": "Debtor portal", "onAutoForward": "silent" }
   },
-  "initializeCommand": "bash ${localWorkspaceFolder}/.devcontainer/full-stack/initialize.sh",
   "postCreateCommand": "bash .devcontainer/full-stack/postCreate.sh",
   "postStartCommand": "bash .devcontainer/full-stack/postStart.sh",
   "customizations": {

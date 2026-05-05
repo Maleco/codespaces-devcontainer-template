@@ -1,6 +1,6 @@
 services:
   backend:
-    image: mcr.microsoft.com/devcontainers/ruby:3.4
+    image: mcr.microsoft.com/devcontainers/universal:2
     volumes:
       - /workspaces:/workspaces
     environment:
@@ -15,7 +15,10 @@ services:
       - ELASTICSEARCH_FRONTEND_URL=http://elasticsearch:9200
       - SMTP_HOST=localhost
       - BUNDLE_ENTERPRISE__CONTRIBSYS__COM
+      - NODE_AUTH_TOKEN
       - RAILS_MASTER_KEY
+      - SECRET_KEY_BASE=b557ee68c33d6aa224cca3727c7ce0dcfcbde66876beeefd7c8543522925d554873a7cfe2947a0e552b56db80e530654d71c1f3fc12cce3c574c57e00dd627fb
+      - LOCKBOX_MASTER_KEY=3f642415a98565a61c33e0ec33677767a48dba53cf1031761e093f2510c5bc53
       - CODESPACE_NAME
       - CORS_ORIGINS=https://${CODESPACE_NAME}-5000.app.github.dev,https://${CODESPACE_NAME}-5001.app.github.dev
     depends_on:
@@ -23,30 +26,6 @@ services:
       - redis
       - elasticsearch
     command: sleep infinity
-
-  frontend:
-    image: node:20
-    volumes:
-      - /workspaces/frontend:/workspaces/frontend
-      - frontend_modules:/workspaces/frontend/node_modules
-    environment:
-      - NODE_AUTH_TOKEN
-      - REACT_APP_BACKEND_URL=https://${CODESPACE_NAME}-3000.app.github.dev
-    command: bash -c "cd /workspaces/frontend && npm ci && npm run start"
-    ports:
-      - "5000:5000"
-
-  factuurinzien:
-    image: node:20
-    volumes:
-      - /workspaces/factuurinzien:/workspaces/factuurinzien
-      - factuurinzien_modules:/workspaces/factuurinzien/node_modules
-    environment:
-      - NODE_AUTH_TOKEN
-      - REACT_APP_BACKEND_URL=https://${CODESPACE_NAME}-3000.app.github.dev
-    command: bash -c "cd /workspaces/factuurinzien && npm ci && npm run start"
-    ports:
-      - "5001:5001"
 
   postgres:
     image: payt/postgres:18.1
@@ -87,5 +66,3 @@ volumes:
   postgres_data:
   elasticsearch_data:
   redis_data:
-  frontend_modules:
-  factuurinzien_modules:
